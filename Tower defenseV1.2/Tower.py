@@ -12,6 +12,8 @@ class Tower:
         self.vie = vie
         self.rect = rect
         self.hitbox = Collide(self.x - (self.range - self.size_x) / 2, self.y - (self.range - self.size_y) / 2, self.range, self.range)  #Mettre une range
+        self.targetable = []
+        self.further = None
 
     
     # def drawrect(self,hitbox):

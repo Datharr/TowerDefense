@@ -21,21 +21,43 @@ def loading_monsters(monster_list,nombre):          #générateur de monstre en 
         #random.randint(0, 5)
     return monster_list
 
-def the_further(monster_list, far, far2): #calcul du monstre le plus loin en fonction du pathing far = le plus loin sur le chemin du haut / far2 = le plus loin sur le chemin du bas
-    far = 0
-    far2 = 0
+def the_further(monster_list, building_list): #calcul du monstre le plus loin en fonction du pathing far = le plus loin sur le chemin du haut / far2 = le plus loin sur le chemin du bas
 
-    for a in range (len(monster_list)):
-        if monster_list[a].path == 0:
-            if monster_list[a].x <= monster_list[far].x:
-                far = a
+
+
+    # recupere les index des monstres qui sont dans la range de chacune des tours
+    for b in range (len(building_list)):
+        for m in range (len(monster_list)):
+            if building_list[b].hitbox.check_collide(monster_list[m].hitbox) == True:
+                building_list[b].targetable.append(m)
+    
+  
+    # trouve le plus loin parmi ceux dans la range
+
+    for b in range (len(building_list)):
+        for m in (building_list[b].targetable):
+
+            if building_list[b].further == None:
+                building_list[b].further = monster_list[m]
+
+            if building_list[b].further.x <= monster_list[m].x:
+                building_list[b].further = monster_list[m]
+
+        if len(building_list[b].targetable) == 0:
+            building_list[b].further = None    
+
+            
+
+    #     if monster_list[a].path == 0:
+    #         if monster_list[a].x <= monster_list[far].x:
+    #             far = a
         
-    for b in range (len(monster_list)):    
-        if monster_list[b].path == 1:
-            if monster_list[b].x <= monster_list[far2].x:
-                far2 = b
+    # for b in range (len(monster_list)):    
+    #     if monster_list[b].path == 1:
+    #         if monster_list[b].x <= monster_list[far2].x:
+    #             far2 = b
 
-    return far, far2
+    return building_list
 
 def display_text(win, text, positionX, positionY, size,R,G,B):    #Fonction texte             #fonction pour afficher du texte à l'écran
     font = pygame.font.SysFont("arial", size)                     #Police et taille
@@ -162,6 +184,7 @@ def arrow_traj(monster_list, far, far2, projectile_list, a, data, arrow, effect_
 
     print("far: " + str(far))
     print("monster_list: " + str(len(monster_list)))
+
     if building_list[a].hitbox.check_collide(monster_list[far].hitbox) == True:  #voit si on est dans la range avec la méthode .check_collide de la class collide
         if building_list[a].path == 0 and projectile_list[a]["cd"] == 0:
             if projectile_list[a]["x"] < monster_list[far].x:
@@ -338,7 +361,7 @@ if __name__ == "__main__":  #programme main
         win.blit(lvl1, (0, 0))
         win.blit(build_logo, (-5,980))
         win.blit(spd_logo, (-5,876))
-        far, far2 = the_further(monster_list, far, far2)                #utilisation de la fonction calculant le plus loin et recuperation des valeurs far et far2
+        far, far2 = the_further(monster_list, building_list)                #utilisation de la fonction calculant le plus loin et recuperation des valeurs far et far2
         mouse_pos = pygame.mouse.get_pos()                            #recuperation de la pos de la souris en tuple(x,y)
         mouse_p = pygame.mouse.get_pressed()                          #recuperation si le clique de la souris à été pressé soit True soit False
         building_list,State,data,effect_list = cursor(State,building_list,data,effect_list)
