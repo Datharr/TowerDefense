@@ -6,7 +6,7 @@ class Tower:
         self.y = y
         self.size_x = 80
         self.size_y = 100
-        self.range = 300
+        self.range = 400
         self.arrow = arrow
         self.path = path
         self.vie = vie

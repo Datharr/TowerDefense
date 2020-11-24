@@ -27,6 +27,9 @@ def the_further(monster_list, building_list): #calcul du monstre le plus loin en
 
     # recupere les index des monstres qui sont dans la range de chacune des tours
     for b in range (len(building_list)):
+        building_list[b].targetable = []
+
+    for b in range (len(building_list)):
         for m in range (len(monster_list)):
             if building_list[b].hitbox.check_collide(monster_list[m].hitbox) == True:
                 building_list[b].targetable.append(m)
@@ -179,15 +182,16 @@ def path1(monster_list,a):                 #fonction pour faire le chemin de la 
     return monster_list
 
 def arrow_traj(monster_list, far, far2, projectile_list, a, data, arrow, effect_list): #codage des flèches
-    print("a: " + str(a))
-    print("building_list: " + str(len(building_list)))
+    # print("a: " + str(a))
+    # print("building_list: " + str(len(building_list)))
 
-    print("far: " + str(far))
-    print("monster_list: " + str(len(monster_list)))
+    # print("far: " + str(far))
+    # print("monster_list: " + str(len(monster_list)))
 
-    if building_list[a].hitbox.check_collide(monster_list[far].hitbox) == True:  #voit si on est dans la range avec la méthode .check_collide de la class collide
+    # if building_list[a].hitbox.check_collide(monster_list[building_list[a].further].hitbox) == True:
+    if building_list[a].further != None:
         if building_list[a].path == 0 and projectile_list[a]["cd"] == 0:
-            if projectile_list[a]["x"] < monster_list[far].x:
+            if projectile_list[a]["x"] < building_list[a].further.x:
                 projectile_list[a]["x"] += 15
                 arrow = rotate_arrow("images/arrow.png",0)
             else: 
@@ -195,14 +199,15 @@ def arrow_traj(monster_list, far, far2, projectile_list, a, data, arrow, effect_
                 arrow = rotate_arrow("images/arrow.png",-80)
 
 
-            if projectile_list[a]["y"] < monster_list[far].y:
+            if projectile_list[a]["y"] < building_list[a].further.y:
                 projectile_list[a]["y"] += 15
             else: 
                 projectile_list[a]["y"] -= 15
 
-            if projectile_list[a]["x"] >= monster_list[far].x-10 and projectile_list[a]["x"] <= monster_list[far].x+10  :
-                effect_list = load_effect(effect_list, monster_list[far].x, monster_list[far].y, "animation/blood/", 9, 30, 1, 2)
-                monster_list.pop(far)
+            if projectile_list[a]["x"] >= building_list[a].further.x-10 and projectile_list[a]["x"] <= building_list[a].further.x+10  :
+                effect_list = load_effect(effect_list, building_list[a].further.x, building_list[a].further.y, "animation/blood/", 9, 30, 1, 2)
+                if building_list[a].further in monster_list:
+                    monster_list.pop(monster_list.index(building_list[a].further))
                 projectile_list[a]["cd"] = projectile_list[a]["cdmax"]
                 data["money"] += 5
                 projectile_list[a]["x"] = projectile_list[a]["reset_x"]
@@ -322,7 +327,7 @@ if __name__ == "__main__":  #programme main
 
     ]
 
-    wave_list = [2,3,4,0,7,0]
+    wave_list = [2,3,4,100,7,0]
     effect_list = []
     actual_spd = 20
     load_effect(effect_list, 0, 70, "animation/coin/", 2, 12, 1, 4)
@@ -361,7 +366,7 @@ if __name__ == "__main__":  #programme main
         win.blit(lvl1, (0, 0))
         win.blit(build_logo, (-5,980))
         win.blit(spd_logo, (-5,876))
-        far, far2 = the_further(monster_list, building_list)                #utilisation de la fonction calculant le plus loin et recuperation des valeurs far et far2
+        building_list = the_further(monster_list, building_list)                #utilisation de la fonction calculant le plus loin et recuperation des valeurs far et far2
         mouse_pos = pygame.mouse.get_pos()                            #recuperation de la pos de la souris en tuple(x,y)
         mouse_p = pygame.mouse.get_pressed()                          #recuperation si le clique de la souris à été pressé soit True soit False
         building_list,State,data,effect_list = cursor(State,building_list,data,effect_list)
@@ -370,7 +375,7 @@ if __name__ == "__main__":  #programme main
         actual_spd,spd_logo = spd_button(actual_spd,spd_logo)
         display_text(win,str(data["money"]),100, 100, 50,0,0,255)                      #affichage de l'argent avec (fenêtre,texte,x,y,taille,(couleur RGB))
         for a in range (len(building_list)):
-            pygame.draw.rect(win, [0, 200, 0], [building_list[a].hitbox.pos_x,building_list[a].hitbox.pos_y,building_list[a].hitbox.size_x,building_list[a].hitbox.size_y])
+            pygame.draw.rect(win, [255, 0, 0], [building_list[a].hitbox.pos_x,building_list[a].hitbox.pos_y,building_list[a].hitbox.size_x,building_list[a].hitbox.size_y], 4)
             #enlever le # permet de voir les hitbox
             win.blit(tower1, (building_list[a].x, building_list[a].y))
 
