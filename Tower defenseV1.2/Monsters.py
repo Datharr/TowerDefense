@@ -1,6 +1,7 @@
 from pygame.rect import Rect
 from Collide import *
 import pygame
+import random
 
 
 class Monster:
@@ -16,6 +17,11 @@ class Monster:
         self.hitbox = Collide(self.x-50, self.y, 40, 73) #Mettre une range
         self.type = typem
 
+        if self.path == 0:
+            self.livre = [random.randint(1301, 1365),random.randint(373, 429),random.randint(1104, 1167)
+                    ,random.randint(120, 200),random.randint(673, 737),random.randint(235, 329),random.randint(450, 535),
+                    random.randint(480, 555)]
+
         if self.type == -1:
             self.pathmove = "monsters/rect/run/run"   
             self.movemax = 1               
@@ -24,32 +30,36 @@ class Monster:
         if self.type == 0:
             self.pathmove = "monsters/goblin/run/run"
             self.movemax = 10
-            self.xsize = 48
-            self.ysize = 72
+            self.xsize = 24
+            self.ysize = 36
+            self.spd -= 3
         if self.type == 1:
             self.pathmove = "monsters/knight/run/run"
-            self.spd -= 4
             self.movemax = 12
             self.xsize = 66
             self.ysize = 82
+            self.spd -= 7
         if self.type == 2:
             self.pathmove = "monsters/orc/run/run"
             self.movemax = 8
             self.xsize = 58
             self.ysize = 36
+            self.spd -= 5
         if self.type == 3:
             self.pathmove = "monsters/roguelike/run/run"
             self.movemax = 6
             self.xsize = 34
             self.ysize = 40
+            self.spd -= 7
         if self.type == 4:
             self.pathmove = "monsters/minotaur/run/run"
-            self.spd -= 4
             self.movemax = 16
             self.xsize = 104
             self.ysize = 82
+            self.spd -= 7
         if self.type == 5:
             self.pathmove = "monsters/dwarf/run/run"
             self.movemax = 8
             self.xsize = 42
             self.ysize = 36
+            self.spd -= 6

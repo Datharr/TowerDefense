@@ -18,6 +18,7 @@ def check_input_exit():
 def loading_monsters(monster_list,nombre):          #générateur de monstre en fonction de "nombre"
     for a in range (nombre):
         monster_list.append(Monster(100,10,10,1820,240,0,0,0,0,0,random.randint(0, 5)))
+        
         #random.randint(0, 5)
     return monster_list
 
@@ -73,49 +74,57 @@ def loading_wave(monster_list,wave_list):
         for a in range (wave_list[monster_id]):
             monster_list.append(Monster(100,10,10,1820,240,0,0,0,0,0,monster_id))
     
+    for a in range (len(monster_list)):
+        monster_list[a].path = random.randint(0, 1)
+        if monster_list[a].path == 0:
+            monster_list[a].y = random.randint(223, 300)
+            monster_list[a].x = random.randint(2000, 3500)
+        if monster_list[a].path == 1:
+            monster_list[a].y = random.randint(640, 755) 
+            monster_list[a].x =  random.randint(2000, 3500)   
+        monster_list[a].movement = random.randint(1, 5)
+    
     return monster_list
 
-def random_height():                        #fonction pour randomiser les valeurs y des monstres 
-    random = random.randint(240, 320)
-    return random
 
 def load_effect(effect_list,x,y,path,variation,movemax,movement,caract):
     effect_list.append(Effect(x,y,path,variation,movemax,movement,caract))
     return effect_list
 
+
 def path1(monster_list,a):                 #fonction pour faire le chemin de la carte
     if monster_list[a].path == 0:
             if monster_list[a].rect_pos == 0:
                 monster_list[a].x -= monster_list[a].spd
-                if monster_list[a].x <= random.randint(1306, 1374):
+                if monster_list[a].x <= monster_list[a].livre[0]:
                     monster_list[a].rect_pos = 1
             if monster_list[a].rect_pos == 1:
-                monster_list[a].y += 5
-                if monster_list[a].y >= random.randint(363, 437):
+                monster_list[a].y += monster_list[a].spd
+                if monster_list[a].y >= monster_list[a].livre[1]:
                     monster_list[a].rect_pos = 2
             if monster_list[a].rect_pos == 2:
                 monster_list[a].x -= monster_list[a].spd
-                if monster_list[a].x <= random.randint(1004, 1167):
+                if monster_list[a].x <= monster_list[a].livre[2]:
                     monster_list[a].rect_pos = 3
             if monster_list[a].rect_pos == 3:
-                monster_list[a].y -= 5
-                if monster_list[a].y <= random.randint(120, 220):
+                monster_list[a].y -= monster_list[a].spd
+                if monster_list[a].y <= monster_list[a].livre[3]:
                     monster_list[a].rect_pos = 4
             if monster_list[a].rect_pos == 4:
                 monster_list[a].x -= monster_list[a].spd
-                if monster_list[a].x <= random.randint(665, 744):
+                if monster_list[a].x <= monster_list[a].livre[4]:
                     monster_list[a].rect_pos = 5
             if monster_list[a].rect_pos == 5:
-                monster_list[a].y += 5
-                if monster_list[a].y >= random.randint(253, 335):
+                monster_list[a].y += monster_list[a].spd
+                if monster_list[a].y >= monster_list[a].livre[5]:
                     monster_list[a].rect_pos = 6 
             if monster_list[a].rect_pos == 6:
                 monster_list[a].x -= monster_list[a].spd
-                if monster_list[a].x <= random.randint(450, 538):
+                if monster_list[a].x <= monster_list[a].livre[6]:
                     monster_list[a].rect_pos = 7
             if monster_list[a].rect_pos == 7:
-                monster_list[a].y += 5
-                if monster_list[a].y >= random.randint(480, 557):
+                monster_list[a].y += monster_list[a].spd
+                if monster_list[a].y >= monster_list[a].livre[7]:
                     monster_list[a].rect_pos = 8
             if monster_list[a].rect_pos == 8 or monster_list[a].rect_pos == 9:
                 monster_list[a].x -= monster_list[a].spd
@@ -307,6 +316,37 @@ def rotate_arrow(image,angle):   #fonction pour tourner la flèche en fonction d
     
     return arrow
 
+def open_portal(wave_state,b):
+    
+    if wave_state == 0:
+        portal = pygame.image.load("animation/portal/open/open"+ str(b) +".png").convert_alpha()
+
+        if b >= 8:
+            b = 1
+            wave_state = 1
+    if wave_state == 1:
+        portal = pygame.image.load("animation/portal/spawn/spawn"+ "1" +".png").convert_alpha()
+        rect_portal = pygame.draw.rect(win, (0, 200, 0), (1877,  240, 100, 100))
+        rect_portal2 = pygame.draw.rect(win, (0, 200, 0), (1877,  663, 100, 100))
+        mouse_pos = pygame.mouse.get_pos()
+        mouse_p = pygame.mouse.get_pressed()
+        if mouse_p[0] == True:
+            if rect_portal.collidepoint(mouse_pos) or rect_portal2.collidepoint(mouse_pos):
+                wave_state = 2
+                b = 1
+    b += 1
+    if wave_state == 2:
+        portal = pygame.image.load("animation/portal/close/close"+ str(b) +".png").convert_alpha()    
+        if b >= 6:
+            b = 1
+            wave_state = 3
+    
+    win.blit(portal, (1880,270))
+    win.blit(portal, (1880,690))
+    
+    return wave_state,b
+
+
 
 if __name__ == "__main__":  #programme main 
 
@@ -315,6 +355,8 @@ if __name__ == "__main__":  #programme main
     clock = pygame.time.Clock()
     win = pygame.display.set_mode((1920, 1080), pygame.FULLSCREEN)
     State = False
+    wave_state = 0
+    b = 1
 
     data = {"pv":100,"money":1000}
     monster_list = []
@@ -326,23 +368,25 @@ if __name__ == "__main__":  #programme main
     projectile_list = [{"x":1412,"y":100,"reset_x":1412,"reset_y":100,"cd":0,"cdmax":10}
 
     ]
-
-    wave_list = [2,3,4,100,7,0]
+    
+    wave_list0 = [0,0,0,0,0,0]
+    wave_list1 = [2,3,4,30,7,0]
     effect_list = []
     actual_spd = 20
     load_effect(effect_list, 0, 70, "animation/coin/", 2, 12, 1, 4)
-    # monster_list = loading_monsters(monster_list,50)
-    monster_list = loading_wave(monster_list,wave_list)
+    monster_list = loading_wave(monster_list,wave_list0)
     logo1_rect = pygame.draw.rect(win, (0, 200, 0), (0,  962, 118, 104))
     logo2_rect = pygame.draw.rect(win, (0, 200, 0), (0,  876, 118, 104))
+    
+    
     
     for a in range (len(monster_list)):
         monster_list[a].path = random.randint(0, 1)
         if monster_list[a].path == 0:
-            monster_list[a].y = random.randint(240, 320)
+            monster_list[a].y = random.randint(223, 300)
             monster_list[a].x = random.randint(1750, 3000)
         if monster_list[a].path == 1:
-            monster_list[a].y = random.randint(740, 760) 
+            monster_list[a].y = random.randint(640, 755) 
             monster_list[a].x =  random.randint(1750, 3000)   
         monster_list[a].movement = random.randint(1, 10)
 
@@ -353,6 +397,11 @@ if __name__ == "__main__":  #programme main
     rect = pygame.transform.scale(rect, (40, 40))
     tower1 = pygame.image.load("images/tower1.png").convert_alpha()
     tower1 = pygame.transform.scale(tower1, (80, 100))
+    tower2 = pygame.image.load("images/tower2.png").convert_alpha()
+    tower2 = pygame.transform.scale(tower2, (80, 100))
+    tower3 = pygame.image.load("images/tower3.png").convert_alpha()
+    tower3 = pygame.transform.scale(tower3, (80, 100))
+        
     arrow = rotate_arrow("images/arrow.png",0)
     rect_blue = pygame.image.load("images/rect_blue.png").convert_alpha()
     rect_blue = pygame.transform.scale(rect_blue, (40, 40))
@@ -374,6 +423,14 @@ if __name__ == "__main__":  #programme main
         monster_list = movement_goblin(monster_list)
         actual_spd,spd_logo = spd_button(actual_spd,spd_logo)
         display_text(win,str(data["money"]),100, 100, 50,0,0,255)                      #affichage de l'argent avec (fenêtre,texte,x,y,taille,(couleur RGB))
+
+        if wave_state < 3:
+            wave_state,b = open_portal(wave_state,b)
+        elif wave_state == 3 : 
+            monster_list = loading_wave(monster_list,wave_list1)
+            wave_state = 4
+
+
         for a in range (len(building_list)):
             pygame.draw.rect(win, [255, 0, 0], [building_list[a].hitbox.pos_x,building_list[a].hitbox.pos_y,building_list[a].hitbox.size_x,building_list[a].hitbox.size_y], 4)
             #enlever le # permet de voir les hitbox
@@ -426,7 +483,6 @@ if __name__ == "__main__":  #programme main
                 win.blit(rect2, (monster_list[a].x, monster_list[a].y))
                 monster_list[a].hitbox.update_rect(monster_list[a].x,monster_list[a].y)
         #-------------------------------------------------------
-       
         pygame.display.flip()       #actualisation de l'écran 
         check_input_exit()                #voit si on veut quitter le jeu avec ECHAP
 

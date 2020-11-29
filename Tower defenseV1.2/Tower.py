@@ -1,4 +1,5 @@
 from Collide import *
+import random
 
 class Tower:
     def __init__(self,x,y,arrow,path,vie,rect):
@@ -6,7 +7,7 @@ class Tower:
         self.y = y
         self.size_x = 80
         self.size_y = 100
-        self.range = 400
+        self.range = 500
         self.arrow = arrow
         self.path = path
         self.vie = vie
