@@ -86,11 +86,9 @@ def loading_wave(monster_list,wave_list):
     
     return monster_list
 
-
 def load_effect(effect_list,x,y,path,variation,movemax,movement,caract):
     effect_list.append(Effect(x,y,path,variation,movemax,movement,caract))
     return effect_list
-
 
 def path1(monster_list,a):                 #fonction pour faire le chemin de la carte
     if monster_list[a].path == 0:
@@ -198,7 +196,7 @@ def arrow_traj(monster_list, far, far2, projectile_list, a, data, arrow, effect_
         if projectile_list[a]["cd"] == 0:
             if projectile_list[a]["x"] < building_list[a].further.x:
                 projectile_list[a]["x"] += 15
-                arrow = rotate_arrow("images/arrow.png",0)
+                arrow = rotate_arrow("images/arrow.png",180)
             else: 
                 projectile_list[a]["x"] -= 15
                 arrow = rotate_arrow("images/arrow.png",-80)
@@ -222,31 +220,6 @@ def arrow_traj(monster_list, far, far2, projectile_list, a, data, arrow, effect_
             if projectile_list[a]["cd"] <= 0:
                 projectile_list[a]["cd"] = 0
         
-    
-    #----------------------------
-    # if building_list[a].further != None:
-    #     if building_list[a].path == 0 and projectile_list[a]["cd"] == 0:
-    #     if projectile_list[a]["x"] < monster_list[far2].x:
-    #         projectile_list[a]["x"] += 15
-    #         arrow = rotate_arrow("images/arrow.png",0)
-    #     else: 
-    #         projectile_list[a]["x"] -= 15
-    #         arrow = rotate_arrow("images/arrow.png",-80)
-
-    #     if projectile_list[a]["y"] < monster_list[far2].y:
-    #         projectile_list[a]["y"] += 15
-    #     else: 
-    #         projectile_list[a]["y"] -= 15
-
-    #     if projectile_list[a]["x"] >= monster_list[far2].x-10 and projectile_list[a]["x"] <= monster_list[far2].x+10  :
-    #         monster_list.pop(far2)
-    #         data["money"] += 5
-    #         projectile_list[a]["x"] = projectile_list[a]["reset_x"]
-    #         projectile_list[a]["y"] = projectile_list[a]["reset_y"]
-    # else : 
-    #     projectile_list[a]["cd"] -= 1
-    #     if projectile_list[a]["cd"] <= 0:
-    #         projectile_list[a]["cd"] = 0
 
 
     return projectile_list,monster_list,data,arrow,effect_list
@@ -295,7 +268,6 @@ def spd_button(actual_spd,spd_logo):
         spd_logo = pygame.transform.scale(spd_logo, (118, 104))
 
     return actual_spd,spd_logo
-
 
 def movement_goblin(monster_list):    #fonction pour coder l'animation des monstres
     for a in range (len(monster_list)):
@@ -354,10 +326,47 @@ def wave_end(monster_list,wave_state,wave_list,wave_number):
 
     if len(monster_list) == 0 and wave_list[wave_number] != wave_list[0] and wave_state > 3 :
         wave_state = 0
-        print ("v")
 
     return wave_state,wave_number
 
+def shop(building_list,data,a,mouse_pos,mouse_p,circle_shop,item1,item2,item3):
+
+    # pygame.draw.rect(win, (0, 200, 0), (building_list[a].x-35,building_list[a].y-10, 150, 150))
+    if building_list[a].addon.check_mouse(mouse_pos):
+        win.blit(circle_shop, (building_list[a].x-23,building_list[a].y+21))
+        
+        if building_list[a].upgrade["Attack"] == None and building_list[a].upgrade["Speed"] == None:
+            win.blit(item1, (building_list[a].x-15,building_list[a].y+90))
+            rect_topleft = pygame.Rect(building_list[a].x-15,  building_list[a].y+90, 24, 24)
+            if mouse_p[0] == True and data["money"] >= 100:
+                if rect_topleft.collidepoint(mouse_pos):
+                    data["money"] -= 100  
+                    building_list[a].structure = 4
+                    building_list[a].upgrade["Attack"] = 1
+                    building_list[a].attack = 250
+
+        if building_list[a].upgrade["Speed"] == None and building_list[a].upgrade["Attack"] == None:
+            win.blit(item2, (building_list[a].x-15,building_list[a].y+30))   
+            rect_botleft = pygame.Rect(building_list[a].x-15,  building_list[a].y+30, 24, 24) 
+            if mouse_p[0] == True and data["money"] >= 100:
+                if rect_botleft.collidepoint(mouse_pos):
+                    data["money"] -= 100
+                    building_list[a].structure = 3
+                    building_list[a].upgrade["Speed"] = 1
+                    projectile_list[a]["cdmax"] = 5
+
+    
+    return building_list,data   
+
+def calculate_points_projectile(src, dest, count):
+    points = []
+    dX = dest[0] - src[0]
+    dY = dest[1] - src[1]
+    interval_X = dX / (count + 1)
+    interval_Y = dY / (count + 1)
+    for i in range(count):
+        points.append((src[0] + interval_X * i, src[1] + interval_Y * i))
+    return points
 
 if __name__ == "__main__":  #programme main 
 
@@ -402,7 +411,9 @@ if __name__ == "__main__":  #programme main
             monster_list[a].x =  random.randint(1750, 3000)   
         monster_list[a].movement = random.randint(1, 10)
 
-    
+    circle_shop = pygame.image.load("images/53.png").convert_alpha()
+    circle_shop = pygame.transform.scale(circle_shop, (115, 103))
+
     lvl1 = pygame.image.load("images/map.jpg").convert()
     lvl1 = pygame.transform.scale(lvl1, (1920, 1080))
     rect = pygame.image.load("images/rect.png").convert()
@@ -412,8 +423,20 @@ if __name__ == "__main__":  #programme main
     tower2 = pygame.image.load("images/tower2.png").convert_alpha()
     tower2 = pygame.transform.scale(tower2, (80, 100))
     tower3 = pygame.image.load("images/tower3.png").convert_alpha()
-    tower3 = pygame.transform.scale(tower3, (80, 100))
+    tower3 = pygame.transform.scale(tower3, (80, 100))   
+    tower4 = pygame.image.load("images/tower4.png").convert_alpha()
+    tower4 = pygame.transform.scale(tower4, (80, 100))
+
+    #----------------------------------------
+
+    item1 = pygame.image.load("images/items/Item__03.png").convert_alpha()
+    item1 = pygame.transform.scale(item1, (24, 24))
+    item2 = pygame.image.load("images/items/Item__18.png").convert_alpha()
+    item2 = pygame.transform.scale(item2, (24, 24))
+    item3 = pygame.image.load("images/items/Item__25.png").convert_alpha()
+    item3 = pygame.transform.scale(item3, (24, 24))
         
+    #----------------------------------------
     arrow = rotate_arrow("images/arrow.png",0)
     rect_blue = pygame.image.load("images/rect_blue.png").convert_alpha()
     rect_blue = pygame.transform.scale(rect_blue, (40, 40))
@@ -438,7 +461,6 @@ if __name__ == "__main__":  #programme main
 
 
         wave_state,wave_number = wave_end(monster_list,wave_state,wave_list,wave_number)
-        print (wave_number)
 
         if wave_state < 3:
             wave_state,b = open_portal(wave_state,b)
@@ -450,8 +472,15 @@ if __name__ == "__main__":  #programme main
 
         for a in range (len(building_list)):
             pygame.draw.rect(win, [255, 0, 0], [building_list[a].hitbox.pos_x,building_list[a].hitbox.pos_y,building_list[a].hitbox.size_x,building_list[a].hitbox.size_y], 4)
+            building_list,data = shop(building_list,data,a,mouse_pos,mouse_p,circle_shop,item1,item2,item3)
             #enlever le # permet de voir les hitbox
-            win.blit(tower1, (building_list[a].x, building_list[a].y))
+            if building_list[a].structure == 1:
+                win.blit(tower2, (building_list[a].x, building_list[a].y))
+            if building_list[a].structure == 3:
+                win.blit(tower3, (building_list[a].x, building_list[a].y))
+            if building_list[a].structure == 4:
+                win.blit(tower4, (building_list[a].x, building_list[a].y))
+
 
         for a in range (len(projectile_list)):            #affichage de toutes les flèches
             projectile_list,monster_list,data,arrow,effect_list = arrow_traj(monster_list,far,far2,projectile_list,a,data,arrow,effect_list) 

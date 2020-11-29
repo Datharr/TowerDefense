@@ -63,3 +63,14 @@ class Monster:
             self.xsize = 42
             self.ysize = 36
             self.spd -= 6
+        if self.type == 6:
+            self.pathmove = "monsters/gladiator/run/run"
+            self.movemax = 8
+            self.xsize = 42
+            self.ysize = 44
+            self.spd -= 6
+        if self.type == 7:
+            self.pathmove = "monsters/imp/run/run"
+            self.movemax = 8
+            self.xsize = 20
+            self.ysize = 18

@@ -18,3 +18,8 @@ class Collide: #creation d'un carré hitbox
             return True
         else: 
             return False
+    def check_mouse(self,entity):
+        if self.hitbox_rect.collidepoint(entity) == True:
+            return True
+        else: 
+            return False
