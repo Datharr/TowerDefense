@@ -191,15 +191,11 @@ def path1(monster_list,a):                 #fonction pour faire le chemin de la 
     return monster_list
 
 def arrow_traj(monster_list, far, far2, projectile_list, a, data, arrow, effect_list): #codage des flèches
-    # print("a: " + str(a))
-    # print("building_list: " + str(len(building_list)))
 
-    # print("far: " + str(far))
-    # print("monster_list: " + str(len(monster_list)))
 
     # if building_list[a].hitbox.check_collide(monster_list[building_list[a].further].hitbox) == True:
     if building_list[a].further != None:
-        if building_list[a].path == 0 and projectile_list[a]["cd"] == 0:
+        if projectile_list[a]["cd"] == 0:
             if projectile_list[a]["x"] < building_list[a].further.x:
                 projectile_list[a]["x"] += 15
                 arrow = rotate_arrow("images/arrow.png",0)
@@ -228,28 +224,29 @@ def arrow_traj(monster_list, far, far2, projectile_list, a, data, arrow, effect_
         
     
     #----------------------------
-    if building_list[a].path == 1 and projectile_list[a]["cd"] == 0:
-        if projectile_list[a]["x"] < monster_list[far2].x:
-            projectile_list[a]["x"] += 15
-            arrow = rotate_arrow("images/arrow.png",0)
-        else: 
-            projectile_list[a]["x"] -= 15
-            arrow = rotate_arrow("images/arrow.png",-80)
+    # if building_list[a].further != None:
+    #     if building_list[a].path == 0 and projectile_list[a]["cd"] == 0:
+    #     if projectile_list[a]["x"] < monster_list[far2].x:
+    #         projectile_list[a]["x"] += 15
+    #         arrow = rotate_arrow("images/arrow.png",0)
+    #     else: 
+    #         projectile_list[a]["x"] -= 15
+    #         arrow = rotate_arrow("images/arrow.png",-80)
 
-        if projectile_list[a]["y"] < monster_list[far2].y:
-            projectile_list[a]["y"] += 15
-        else: 
-            projectile_list[a]["y"] -= 15
+    #     if projectile_list[a]["y"] < monster_list[far2].y:
+    #         projectile_list[a]["y"] += 15
+    #     else: 
+    #         projectile_list[a]["y"] -= 15
 
-        if projectile_list[a]["x"] >= monster_list[far2].x-10 and projectile_list[a]["x"] <= monster_list[far2].x+10  :
-            monster_list.pop(far2)
-            data["money"] += 5
-            projectile_list[a]["x"] = projectile_list[a]["reset_x"]
-            projectile_list[a]["y"] = projectile_list[a]["reset_y"]
-    else : 
-        projectile_list[a]["cd"] -= 1
-        if projectile_list[a]["cd"] <= 0:
-            projectile_list[a]["cd"] = 0
+    #     if projectile_list[a]["x"] >= monster_list[far2].x-10 and projectile_list[a]["x"] <= monster_list[far2].x+10  :
+    #         monster_list.pop(far2)
+    #         data["money"] += 5
+    #         projectile_list[a]["x"] = projectile_list[a]["reset_x"]
+    #         projectile_list[a]["y"] = projectile_list[a]["reset_y"]
+    # else : 
+    #     projectile_list[a]["cd"] -= 1
+    #     if projectile_list[a]["cd"] <= 0:
+    #         projectile_list[a]["cd"] = 0
 
 
     return projectile_list,monster_list,data,arrow,effect_list
@@ -325,27 +322,41 @@ def open_portal(wave_state,b):
             b = 1
             wave_state = 1
     if wave_state == 1:
-        portal = pygame.image.load("animation/portal/spawn/spawn"+ "1" +".png").convert_alpha()
-        rect_portal = pygame.draw.rect(win, (0, 200, 0), (1877,  240, 100, 100))
-        rect_portal2 = pygame.draw.rect(win, (0, 200, 0), (1877,  663, 100, 100))
+        portal = pygame.image.load("animation/portal/spawn/spawn"+ str(b) +".png").convert_alpha()
+        rect_portal = pygame.Rect(1877,  240, 100, 100)
+        rect_portal2 = pygame.Rect(1877,  663, 100, 100)
         mouse_pos = pygame.mouse.get_pos()
         mouse_p = pygame.mouse.get_pressed()
+
+        if b >= 8:
+            b = 1
         if mouse_p[0] == True:
             if rect_portal.collidepoint(mouse_pos) or rect_portal2.collidepoint(mouse_pos):
                 wave_state = 2
                 b = 1
+        
     b += 1
     if wave_state == 2:
         portal = pygame.image.load("animation/portal/close/close"+ str(b) +".png").convert_alpha()    
         if b >= 6:
             b = 1
             wave_state = 3
-    
-    win.blit(portal, (1880,270))
-    win.blit(portal, (1880,690))
+    portal = pygame.transform.scale(portal, (58, 70))
+    win.blit(portal, (1880,260))
+    win.blit(portal, (1880,680))
     
     return wave_state,b
 
+def wave_end(monster_list,wave_state,wave_list,wave_number):
+
+    if wave_list[wave_number] == wave_list[0] and wave_state == 3 and wave_number == 0:
+        wave_number = 1
+
+    if len(monster_list) == 0 and wave_list[wave_number] != wave_list[0] and wave_state > 3 :
+        wave_state = 0
+        print ("v")
+
+    return wave_state,wave_number
 
 
 if __name__ == "__main__":  #programme main 
@@ -368,13 +379,14 @@ if __name__ == "__main__":  #programme main
     projectile_list = [{"x":1412,"y":100,"reset_x":1412,"reset_y":100,"cd":0,"cdmax":10}
 
     ]
-    
-    wave_list0 = [0,0,0,0,0,0]
-    wave_list1 = [2,3,4,30,7,0]
+
+    wave_list = [[0,0,0,0,0,0],[10,0,0,0,0,0],[1,10,0,1,1,0],[100,30,2,1,2,0]]
+    actual_wave = wave_list[0]
+    wave_number = 0
     effect_list = []
     actual_spd = 20
     load_effect(effect_list, 0, 70, "animation/coin/", 2, 12, 1, 4)
-    monster_list = loading_wave(monster_list,wave_list0)
+    monster_list = loading_wave(monster_list,wave_list[0])
     logo1_rect = pygame.draw.rect(win, (0, 200, 0), (0,  962, 118, 104))
     logo2_rect = pygame.draw.rect(win, (0, 200, 0), (0,  876, 118, 104))
     
@@ -424,11 +436,16 @@ if __name__ == "__main__":  #programme main
         actual_spd,spd_logo = spd_button(actual_spd,spd_logo)
         display_text(win,str(data["money"]),100, 100, 50,0,0,255)                      #affichage de l'argent avec (fenêtre,texte,x,y,taille,(couleur RGB))
 
+
+        wave_state,wave_number = wave_end(monster_list,wave_state,wave_list,wave_number)
+        print (wave_number)
+
         if wave_state < 3:
             wave_state,b = open_portal(wave_state,b)
         elif wave_state == 3 : 
-            monster_list = loading_wave(monster_list,wave_list1)
+            monster_list = loading_wave(monster_list,wave_list[wave_number])
             wave_state = 4
+            wave_number += 1
 
 
         for a in range (len(building_list)):
