@@ -444,13 +444,61 @@ def hud_load_barre():
         barre_list[a] = pygame.transform.scale(barre_list[a], (45, 16))    
     return barre_list
 
+def hud_load_item():
+    item1 = pygame.image.load("images/items/Item__03.png").convert_alpha()
+    item1 = pygame.transform.scale(item1, (24, 24))
+    item2 = pygame.image.load("images/items/Item__18.png").convert_alpha()
+    item2 = pygame.transform.scale(item2, (24, 24))
+    item3 = pygame.image.load("images/items/Item__25.png").convert_alpha()
+    item3 = pygame.transform.scale(item3, (24, 24))
 
+    return item1,item2,item3
 
+def hud_load_tower():
+    tower1 = pygame.image.load("images/tower1.png").convert_alpha()
+    tower1 = pygame.transform.scale(tower1, (80, 100))
+    tower2 = pygame.image.load("images/tower2.png").convert_alpha()
+    tower2 = pygame.transform.scale(tower2, (80, 100))
+    tower3 = pygame.image.load("images/tower3.png").convert_alpha()
+    tower3 = pygame.transform.scale(tower3, (80, 100))   
+    tower4 = pygame.image.load("images/tower4.png").convert_alpha()
+    tower4 = pygame.transform.scale(tower4, (80, 100))
 
+    return tower1,tower2,tower3,tower4
 
+def hud_load_wizard_tower():
+    wizard1 = pygame.image.load("images/wizard1.png").convert_alpha()
+    wizard1 = pygame.transform.scale(wizard1, (80, 100))
+    wizard2 = pygame.image.load("images/wizard2.png").convert_alpha()
+    wizard2 = pygame.transform.scale(wizard2, (80, 100))
 
+    return wizard1,wizard2
 
+def hud_load_hud():
+    circle_shop = pygame.image.load("images/build_logo.png").convert_alpha()
+    circle_shop = pygame.transform.scale(circle_shop, (115, 103))
+    lvl1 = pygame.image.load("images/map.jpg").convert()
+    lvl1 = pygame.transform.scale(lvl1, (1920, 1080))
+    build_logo = pygame.image.load("images/logotest.jpg").convert()
+    build_logo = pygame.transform.scale(build_logo, (118, 104))
+    wizard_logo =  pygame.image.load("images/logo_wizard.jpg").convert()
+    wizard_logo = pygame.transform.scale(wizard_logo, (118, 104))
+    spd_logo = pygame.image.load("images/x1.jpg").convert()
+    spd_logo = pygame.transform.scale(spd_logo, (118, 104))
+    rect_blue = pygame.image.load("images/rect_blue.png").convert_alpha()
+    rect_blue = pygame.transform.scale(rect_blue, (40, 40))
 
+    return circle_shop,lvl1,build_logo,wizard_logo,spd_logo,rect_blue
+
+def hud_load_everything():
+
+    circle_shop,lvl1,build_logo,wizard_logo,spd_logo,rect_blue = hud_load_hud()
+    wizard1,wizard2 = hud_load_wizard_tower()
+    tower1,tower2,tower3,tower4 = hud_load_tower()        
+    barre_list = hud_load_barre()
+    item1,item2,item3 = hud_load_item()
+
+    return circle_shop,lvl1,build_logo,wizard_logo,spd_logo,wizard1,wizard2,tower1,tower2,tower3,tower4,barre_list,item1,item2,item3,rect_blue
 
 if __name__ == "__main__":  #programme main 
 
@@ -463,6 +511,7 @@ if __name__ == "__main__":  #programme main
     b = 1
 
     data = {"pv":100,"money":1000}
+    
     monster_list = []
 
     building_list = [
@@ -496,50 +545,11 @@ if __name__ == "__main__":  #programme main
             monster_list[a].x =  random.randint(1750, 3000)   
         monster_list[a].movement = random.randint(1, 10)
 
-    circle_shop = pygame.image.load("images/build_logo.png").convert_alpha()
-    circle_shop = pygame.transform.scale(circle_shop, (115, 103))
 
-    lvl1 = pygame.image.load("images/map.jpg").convert()
-    lvl1 = pygame.transform.scale(lvl1, (1920, 1080))
-    rect = pygame.image.load("images/rect.png").convert()
-    rect = pygame.transform.scale(rect, (40, 40))
-    tower1 = pygame.image.load("images/tower1.png").convert_alpha()
-    tower1 = pygame.transform.scale(tower1, (80, 100))
-    tower2 = pygame.image.load("images/tower2.png").convert_alpha()
-    tower2 = pygame.transform.scale(tower2, (80, 100))
-    tower3 = pygame.image.load("images/tower3.png").convert_alpha()
-    tower3 = pygame.transform.scale(tower3, (80, 100))   
-    tower4 = pygame.image.load("images/tower4.png").convert_alpha()
-    tower4 = pygame.transform.scale(tower4, (80, 100))
-    wizard1 = pygame.image.load("images/wizard1.png").convert_alpha()
-    wizard1 = pygame.transform.scale(wizard1, (80, 100))
-    wizard2 = pygame.image.load("images/wizard2.png").convert_alpha()
-    wizard2 = pygame.transform.scale(tower2, (80, 100))
-
-    #----------------------------------------
-
-    item1 = pygame.image.load("images/items/Item__03.png").convert_alpha()
-    item1 = pygame.transform.scale(item1, (24, 24))
-    item2 = pygame.image.load("images/items/Item__18.png").convert_alpha()
-    item2 = pygame.transform.scale(item2, (24, 24))
-    item3 = pygame.image.load("images/items/Item__25.png").convert_alpha()
-    item3 = pygame.transform.scale(item3, (24, 24))
-        
-    #----------------------------------------
-    barre_list = hud_load_barre()
-    #----------------------------------------
-
-    #----------------------------------------
+    circle_shop,lvl1,build_logo,wizard_logo,spd_logo,wizard1,wizard2,tower1,tower2,tower3,tower4,barre_list,item1,item2,item3,rect_blue = hud_load_everything()
     arrow = rotate_arrow("images/arrow.png",0)
-    rect_blue = pygame.image.load("images/rect_blue.png").convert_alpha()
-    rect_blue = pygame.transform.scale(rect_blue, (40, 40))
-    build_logo = pygame.image.load("images/logotest.jpg").convert()
-    build_logo = pygame.transform.scale(build_logo, (118, 104))
-    wizard_logo =  pygame.image.load("images/logo_wizard.jpg").convert()
-    wizard_logo = pygame.transform.scale(wizard_logo, (118, 104))
 
-    spd_logo = pygame.image.load("images/x1.jpg").convert()
-    spd_logo = pygame.transform.scale(spd_logo, (118, 104))
+
     # build_logo = pygame.transform.scale(build_logo, (40, 40))
     while True:                                                       #boucle de jeu
         clock.tick(actual_spd)                                                #nombre de tour de boucle par seconde (FPS)
@@ -612,23 +622,15 @@ if __name__ == "__main__":  #programme main
             a += 1 
                     
         
-        for a in range (len(monster_list)):            #affichage des carrés bleues pour les monstres les plus loins else un simple sprite de monstre 
-            if far == a or far2 == a:
-                # pygame.draw.rect(win, [255, 0, 0], [monster_list[a].hitbox.pos_x,monster_list[a].hitbox.pos_y,monster_list[a].hitbox.size_x,monster_list[a].hitbox.size_y])
-                #enlever le # permet de voir les hitbox
-                win.blit(rect_blue, (monster_list[a].x, monster_list[a].y))
-                monster_list = path1(monster_list,a)
-                monster_list[a].hitbox.update_rect(monster_list[a].x,monster_list[a].y)
-
-            else:
-                show_pv(monster_list,a,barre_list)
-                rect2 = pygame.image.load(monster_list[a].pathmove + str(monster_list[a].movement) + ".png").convert_alpha()
-                rect2 = pygame.transform.scale(rect2, (monster_list[a].xsize, monster_list[a].ysize))
-                monster_list = path1(monster_list,a)
-                # pygame.draw.rect(win, [0, 0, 255], [monster_list[a].hitbox.pos_x,monster_list[a].hitbox.pos_y,monster_list[a].hitbox.size_x,monster_list[a].hitbox.size_y])
-                #enlever le # permet de voir les hitbox
-                win.blit(rect2, (monster_list[a].x, monster_list[a].y))
-                monster_list[a].hitbox.update_rect(monster_list[a].x,monster_list[a].y)
+        for a in range (len(monster_list)):         
+            show_pv(monster_list,a,barre_list)
+            rect2 = pygame.image.load(monster_list[a].pathmove + str(monster_list[a].movement) + ".png").convert_alpha()
+            rect2 = pygame.transform.scale(rect2, (monster_list[a].xsize, monster_list[a].ysize))
+            monster_list = path1(monster_list,a)
+            # pygame.draw.rect(win, [0, 0, 255], [monster_list[a].hitbox.pos_x,monster_list[a].hitbox.pos_y,monster_list[a].hitbox.size_x,monster_list[a].hitbox.size_y])
+            #enlever le # permet de voir les hitbox
+            win.blit(rect2, (monster_list[a].x, monster_list[a].y))
+            monster_list[a].hitbox.update_rect(monster_list[a].x,monster_list[a].y)
         #-------------------------------------------------------
         pygame.display.flip()       #actualisation de l'écran 
         check_input_exit()                #voit si on veut quitter le jeu avec ECHAP
