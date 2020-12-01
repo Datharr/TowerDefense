@@ -2,17 +2,18 @@ from Collide import *
 import random
 
 class Tower:
-    def __init__(self,x,y,arrow,path,vie,rect):
+    def __init__(self,x,y,arrow,path,vie,rect,type,range):
         self.x = x
         self.y = y
         self.size_x = 80
         self.size_y = 100
-        self.range = 500
+        self.range = range
         self.arrow = arrow
         self.attack = 100
         self.path = path
         self.vie = vie
         self.rect = rect
+        self.type = type
         self.hitbox = Collide(self.x - (self.range - self.size_x) / 2, self.y - (self.range - self.size_y) / 2, self.range, self.range)  #Mettre une range
         self.addon = Collide(self.x-35, self.y-10 , 150, 150)
         self.targetable = []

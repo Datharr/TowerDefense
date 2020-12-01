@@ -84,3 +84,4 @@ class Monster:
             self.ysize = 18
     
         self.pvmax = self.pv
+        self.spdbase = self.spd
