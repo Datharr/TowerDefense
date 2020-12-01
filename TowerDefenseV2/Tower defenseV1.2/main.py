@@ -188,7 +188,7 @@ def path1(monster_list,a):                 #fonction pour faire le chemin de la 
 
     return monster_list
 
-def arrow_traj(monster_list, far, far2, projectile_list, a, data, arrow, effect_list): #codage des flèches
+def arrow_traj(monster_list,building_list, far, far2, projectile_list, a, data, arrow, effect_list): #codage des flèches
 
 
     # if building_list[a].hitbox.check_collide(monster_list[building_list[a].further].hitbox) == True:
@@ -210,7 +210,9 @@ def arrow_traj(monster_list, far, far2, projectile_list, a, data, arrow, effect_
             if projectile_list[a]["x"] >= building_list[a].further.x-10 and projectile_list[a]["x"] <= building_list[a].further.x+10  :
                 effect_list = load_effect(effect_list, building_list[a].further.x, building_list[a].further.y, "animation/blood/", 9, 30, 1, 2)
                 if building_list[a].further in monster_list:
-                    monster_list.pop(monster_list.index(building_list[a].further))
+                    building_list[a].further.pv -= building_list[a].attack
+                    if building_list[a].further.pv <= 0 :   
+                        monster_list.pop(monster_list.index(building_list[a].further))
                 projectile_list[a]["cd"] = projectile_list[a]["cdmax"]
                 data["money"] += 5
                 projectile_list[a]["x"] = projectile_list[a]["reset_x"]
@@ -222,7 +224,7 @@ def arrow_traj(monster_list, far, far2, projectile_list, a, data, arrow, effect_
         
 
 
-    return projectile_list,monster_list,data,arrow,effect_list
+    return projectile_list,monster_list,building_list,data,arrow,effect_list
 
 def build(monster_list,logo1_rect,building_list,projectile_list,State,data):   #cliquer sur le bouton en bas a gauche met en mode "construction"
     mouse_pos = pygame.mouse.get_pos()
@@ -353,7 +355,7 @@ def shop(building_list,data,a,mouse_pos,mouse_p,circle_shop,item1,item2,item3):
                     data["money"] -= 100
                     building_list[a].structure = 3
                     building_list[a].upgrade["Speed"] = 1
-                    projectile_list[a]["cdmax"] = 5
+                    projectile_list[a]["cdmax"] = 4
 
     
     return building_list,data   
@@ -367,6 +369,35 @@ def calculate_points_projectile(src, dest, count):
     for i in range(count):
         points.append((src[0] + interval_X * i, src[1] + interval_Y * i))
     return points
+
+def show_pv(monster_list,a,barre_list):
+    if monster_list[a].pv != monster_list[a].pvmax:
+        if  monster_list[a].pv > 90/100* monster_list[a].pvmax:
+            win.blit(barre_list[8],(monster_list[a].x-15,monster_list[a].y-10))
+            
+        elif  monster_list[a].pv > 80/100* monster_list[a].pvmax:
+            win.blit(barre_list[7],(monster_list[a].x-15,monster_list[a].y-10))
+
+        elif  monster_list[a].pv > 70/100* monster_list[a].pvmax:
+            win.blit(barre_list[6],(monster_list[a].x-15,monster_list[a].y-10))
+
+        elif  monster_list[a].pv > 60/100* monster_list[a].pvmax:
+            win.blit(barre_list[5],(monster_list[a].x-15,monster_list[a].y-10))
+
+        elif  monster_list[a].pv > 50/100* monster_list[a].pvmax:
+            win.blit(barre_list[4],(monster_list[a].x-15,monster_list[a].y-10))
+
+        elif monster_list[a].pv > 40/100*monster_list[a].pvmax:
+            win.blit(barre_list[3],(monster_list[a].x-15,monster_list[a].y-10))
+
+        elif  monster_list[a].pv > 30/100* monster_list[a].pvmax:
+            win.blit(barre_list[2],(monster_list[a].x-15,monster_list[a].y-10))
+        
+        elif  monster_list[a].pv > 20/100* monster_list[a].pvmax:
+            win.blit(barre_list[1],(monster_list[a].x-15,monster_list[a].y-10))
+        
+        elif  monster_list[a].pv > 10/100*monster_list[a].pvmax:
+            win.blit(barre_list[0],(monster_list[a].x-15,monster_list[a].y-10))
 
 if __name__ == "__main__":  #programme main 
 
@@ -389,7 +420,7 @@ if __name__ == "__main__":  #programme main
 
     ]
 
-    wave_list = [[0,0,0,0,0,0],[10,0,0,0,0,0],[1,10,0,1,1,0],[100,30,2,1,2,0]]
+    wave_list = [[0,0,0,0,0,0],[10,0,20,0,0,0],[1,10,0,1,1,0],[100,30,2,1,2,0]]
     actual_wave = wave_list[0]
     wave_number = 0
     effect_list = []
@@ -411,7 +442,7 @@ if __name__ == "__main__":  #programme main
             monster_list[a].x =  random.randint(1750, 3000)   
         monster_list[a].movement = random.randint(1, 10)
 
-    circle_shop = pygame.image.load("images/53.png").convert_alpha()
+    circle_shop = pygame.image.load("images/build_logo.png").convert_alpha()
     circle_shop = pygame.transform.scale(circle_shop, (115, 103))
 
     lvl1 = pygame.image.load("images/map.jpg").convert()
@@ -436,6 +467,20 @@ if __name__ == "__main__":  #programme main
     item3 = pygame.image.load("images/items/Item__25.png").convert_alpha()
     item3 = pygame.transform.scale(item3, (24, 24))
         
+    #----------------------------------------
+    barre1 = pygame.image.load("images/health_bar/Health_bar/barre10.png").convert_alpha()
+    barre2 = pygame.image.load("images/health_bar/Health_bar/barre20.png").convert_alpha()
+    barre3 = pygame.image.load("images/health_bar/Health_bar/barre30.png").convert_alpha()
+    barre4 = pygame.image.load("images/health_bar/Health_bar/barre40.png").convert_alpha()
+    barre5 = pygame.image.load("images/health_bar/Health_bar/barre50.png").convert_alpha()
+    barre6 = pygame.image.load("images/health_bar/Health_bar/barre60.png").convert_alpha()
+    barre7 = pygame.image.load("images/health_bar/Health_bar/barre70.png").convert_alpha()
+    barre8 = pygame.image.load("images/health_bar/Health_bar/barre80.png").convert_alpha()
+    barre9 = pygame.image.load("images/health_bar/Health_bar/barre90.png").convert_alpha()
+    barre_list = [barre1,barre2,barre3,barre4,barre5,barre6,barre7,barre8,barre9]
+    for a in range (0,len(barre_list)):
+        barre_list[a] = pygame.transform.scale(barre_list[a], (45, 16))    
+
     #----------------------------------------
     arrow = rotate_arrow("images/arrow.png",0)
     rect_blue = pygame.image.load("images/rect_blue.png").convert_alpha()
@@ -483,7 +528,7 @@ if __name__ == "__main__":  #programme main
 
 
         for a in range (len(projectile_list)):            #affichage de toutes les flèches
-            projectile_list,monster_list,data,arrow,effect_list = arrow_traj(monster_list,far,far2,projectile_list,a,data,arrow,effect_list) 
+            projectile_list,monster_list,building_list,data,arrow,effect_list = arrow_traj(monster_list,building_list,far,far2,projectile_list,a,data,arrow,effect_list) 
             win.blit(arrow, (projectile_list[a]["x"], projectile_list[a]["y"]))
         
         len_effect = len(effect_list)
@@ -521,6 +566,7 @@ if __name__ == "__main__":  #programme main
                 monster_list[a].hitbox.update_rect(monster_list[a].x,monster_list[a].y)
 
             else:
+                show_pv(monster_list,a,barre_list)
                 rect2 = pygame.image.load(monster_list[a].pathmove + str(monster_list[a].movement) + ".png").convert_alpha()
                 rect2 = pygame.transform.scale(rect2, (monster_list[a].xsize, monster_list[a].ysize))
                 monster_list = path1(monster_list,a)
