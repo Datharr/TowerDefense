@@ -1,6 +1,9 @@
 # 🎯 Tower Defense Game 🎯
 
 Welcome to the **Tower Defense Game**! This game features various characteristics and options that make for an engaging and strategic experience. Your goal is to prevent monsters from reaching the end of the path by strategically placing and upgrading towers.
+## Preview 
+
+![Actual Gameplay](preview.jpg)
 
 ## Features
 
